@@ -1,3 +1,4 @@
+using System.Text;
 using Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,18 @@ public class ParseContentController : ControllerBase
     [Consumes("application/json")]
     public async Task<IActionResult> ParseContent([FromBody] ParseContentModel request)
     {
-        return Ok(request.Type);
+        string decodedContent;
+        try
+        {
+            byte[] byteData = Convert.FromBase64String(request.Content);
+            decodedContent = Encoding.UTF8.GetString(byteData);
+        }
+        catch
+        {
+            return BadRequest("Field 'content' has invalid Base64 data");
+        }
+
+
+        return Ok(decodedContent);
     }
 }

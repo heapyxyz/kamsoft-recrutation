@@ -1,10 +1,13 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Xunit.Abstractions;
 
 namespace Api.Tests;
 
-public class ParseContentTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
+public class ParseContentTests(WebApplicationFactory<Program> factory, ITestOutputHelper output)
+    : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient _client = factory.CreateClient();
 
@@ -13,8 +16,14 @@ public class ParseContentTests(WebApplicationFactory<Program> factory) : IClassF
     [InlineData("INTERNAL_JSON", "456")]
     public async Task PostReturnsOk(string type, string content)
     {
+        byte[] byteData = Encoding.UTF8.GetBytes(content);
+        content = Convert.ToBase64String(byteData);
+
         var body = new { type, content };
         var response = await _client.PostAsJsonAsync("/api/v1/parse-content", body);
+
+        output.WriteLine(
+            $"type: {type} | content: {content} | status: {response.StatusCode} | response: {await response.Content.ReadAsStringAsync()}");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -26,8 +35,17 @@ public class ParseContentTests(WebApplicationFactory<Program> factory) : IClassF
     [InlineData("iNtErNaL_jSoN", "hello_world")]
     public async Task PostReturnsBadRequest(string? type, string? content)
     {
+        if (!string.IsNullOrWhiteSpace(content))
+        {
+            byte[] byteData = Encoding.UTF8.GetBytes(content);
+            content = Convert.ToBase64String(byteData);
+        }
+
         var body = new { type, content };
         var response = await _client.PostAsJsonAsync("/api/v1/parse-content", body);
+
+        output.WriteLine(
+            $"type: {type} | content: {content} | status: {response.StatusCode} | response: {await response.Content.ReadAsStringAsync()}");
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 }
