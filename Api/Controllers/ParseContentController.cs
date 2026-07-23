@@ -8,6 +8,7 @@ namespace Api.Controllers;
 public class ParseContentController : ControllerBase
 {
     [HttpPost]
+    [Consumes("application/json")]
     public async Task<IActionResult> ParseContent([FromBody] ParseContentModel request)
     {
         return Ok(request.Type);
