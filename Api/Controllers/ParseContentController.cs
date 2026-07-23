@@ -1,3 +1,4 @@
+using Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -7,8 +8,8 @@ namespace Api.Controllers;
 public class ParseContentController : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> ParseContenet()
+    public async Task<IActionResult> ParseContent([FromBody] ParseContentModel request)
     {
-        return Ok("Hello, world!");
+        return Ok(request.Type);
     }
 }
