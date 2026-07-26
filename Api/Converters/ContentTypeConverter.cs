@@ -8,7 +8,7 @@ public class ContentTypeConverter : JsonConverter<ContentType>
 {
     public override ContentType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var value = reader.GetString();
+        string? value = reader.GetString();
         return value switch
         {
             "CSV" => ContentType.Csv,

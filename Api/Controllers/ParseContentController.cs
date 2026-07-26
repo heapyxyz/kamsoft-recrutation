@@ -23,7 +23,7 @@ public class ParseContentController : ControllerBase
             return BadRequest("Field 'content' has invalid Base64 data");
         }
 
-
-        return Ok(decodedContent);
+        ResponseModel response = new(StatusType.Success, 123, new { Hello = "World" });
+        return Ok(response);
     }
 }
