@@ -10,7 +10,7 @@ public class ParseContentController : ControllerBase
 {
     [HttpPost]
     [Consumes("application/json")]
-    public async Task<IActionResult> ParseContent([FromBody] ParseContentModel request)
+    public async Task<IActionResult> ParseContent([FromBody] RequestModel request)
     {
         string decodedContent;
         try
