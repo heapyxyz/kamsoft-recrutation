@@ -58,7 +58,7 @@ jobs:
           name: ${{ inputs.tag }}
           draft: true
           prerelease: ${{ inputs.prerelease }}
-          body: "Paczki z `sc` w nazwie to wersje **self-contained** - nie wymagają **.NET Runtime 10.0** do uruchomienia."
+          body: "Paczki z `sc` w nazwie to wersje **self-contained** - nie wymagają **ASP.NET Core Runtime 10.0** do uruchomienia."
           files: |
             ./KamsoftApi-win-x64.zip
             ./KamsoftApi-linux-x64.tar.gz
