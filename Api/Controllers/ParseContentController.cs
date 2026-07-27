@@ -32,7 +32,7 @@ public class ParseContentController(JsonParserService jsonParser, CsvParserServi
             {
                 ContentType.Csv => csvParser.Parse(decodedContent),
                 ContentType.Json => jsonParser.Parse(decodedContent),
-                _ => new ParseResult(0, new { }) // CS8524 going crazy without this
+                _ => throw new Exception("Field 'type' is invalid")
             };
 
             ResponseSuccessModel successResponse = new(result.ParsedCount, result.ParsedContent);
