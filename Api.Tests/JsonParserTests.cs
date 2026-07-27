@@ -9,18 +9,18 @@ public class JsonParserTests
 
     [Theory]
     [InlineData(2, "{ \"hello\": \"world\", \"this_is\": \"a_test\" }")]
-    public void ParseObjectReturnsCorrectCount(int expectedNumber, string content)
+    public void ParseObjectReturnsCorrectCount(int expectedCount, string content)
     {
         ParseResult result = _service.Parse(content);
-        Assert.Equal(expectedNumber, result.ParsedNumber);
+        Assert.Equal(expectedCount, result.ParsedCount);
     }
 
     [Theory]
     [InlineData(5, "[1, 2, 3, 4, 5]")]
-    public void ParseArrayReturnsCorrectCount(int expectedNumber, string content)
+    public void ParseArrayReturnsCorrectCount(int expectedCount, string content)
     {
         ParseResult result = _service.Parse(content);
-        Assert.Equal(expectedNumber, result.ParsedNumber);
+        Assert.Equal(expectedCount, result.ParsedCount);
     }
 
     [Theory]
@@ -30,7 +30,7 @@ public class JsonParserTests
     public void ParsePrimitiveReturnsOne(string content)
     {
         ParseResult result = _service.Parse(content);
-        Assert.Equal(1, result.ParsedNumber);
+        Assert.Equal(1, result.ParsedCount);
     }
 
     [Theory]

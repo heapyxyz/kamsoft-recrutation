@@ -34,7 +34,7 @@ public class ParseContentController(JsonParserService jsonParser, CsvParserServi
                 _ => new ParseResult(0, new { }) // CS8524 going crazy without this
             };
 
-            ResponseSuccessModel successResponse = new(result.ParsedNumber, result.ParsedContent);
+            ResponseSuccessModel successResponse = new(result.ParsedCount, result.ParsedContent);
             return Ok(successResponse);
         }
         catch (Exception e)

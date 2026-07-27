@@ -1,3 +1,3 @@
 namespace Api.Services;
 
-public record ParseResult(int ParsedNumber, object ParsedContent);
+public record ParseResult(int ParsedCount, object ParsedContent);

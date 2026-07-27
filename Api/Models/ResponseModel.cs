@@ -1,9 +1,9 @@
 namespace Api.Models;
 
-public class ResponseSuccessModel(int parsedNumber, object parsedContent)
+public class ResponseSuccessModel(int parsedCount, object parsedContent)
 {
     public StatusType Status { get; set; } = StatusType.Success;
-    public int ParsedNumber { get; set; } = parsedNumber;
+    public int ParsedCount { get; set; } = parsedCount;
     public object ParsedContent { get; set; } = parsedContent;
 }
 
