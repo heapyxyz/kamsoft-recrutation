@@ -14,17 +14,21 @@ public class ParseContentController(JsonParserService jsonParser, CsvParserServi
     [Consumes("application/json")]
     public async Task<IActionResult> ParseContent([FromBody] RequestModel request)
     {
-        string decodedContent;
-        try
+        if (string.IsNullOrWhiteSpace(request.Content))
         {
-            byte[] byteData = Convert.FromBase64String(request.Content);
-            decodedContent = Encoding.UTF8.GetString(byteData);
+            ResponseFailedModel failedResponse = new("Field 'content' is null or empty");
+            return BadRequest(failedResponse);
         }
-        catch
+
+
+        byte[] buffer = new byte[request.Content.Length];
+        if (!Convert.TryFromBase64String(request.Content, buffer, out int bytesWritten))
         {
             ResponseFailedModel failedResponse = new("Field 'content' has invalid Base64 data");
             return BadRequest(failedResponse);
         }
+
+        string decodedContent = Encoding.UTF8.GetString(buffer, 0, bytesWritten);
 
         try
         {
