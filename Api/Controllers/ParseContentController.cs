@@ -10,6 +10,7 @@ namespace Api.Controllers;
 public class ParseContentController(JsonParserService jsonParser, CsvParserService csvParser) : ControllerBase
 {
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK), ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Consumes("application/json")]
     public async Task<IActionResult> ParseContent([FromBody] RequestModel request)
     {
