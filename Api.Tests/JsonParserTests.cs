@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Api.Services;
+using Api.Models;
 
 namespace Api.Tests;
 

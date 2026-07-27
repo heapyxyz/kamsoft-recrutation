@@ -1,5 +1,5 @@
-using System.Text.Json;
 using Api.Services;
+using Api.Models;
 
 namespace Api.Tests;
 
@@ -19,14 +19,14 @@ public class CsvParserTests
     [InlineData(1, "a\n1,2,3")]
     public void ParseReturnsCorrectCount(int expectedCount, string content)
     {
-        var result = _service.Parse(content);
+        ParseResult result = _service.Parse(content);
         Assert.Equal(expectedCount, result.ParsedCount);
     }
 
     [Fact]
     public void ParseBasicCsv_ReturnsCorrectData()
     {
-        var result = _service.Parse("a,b\n1,2\n3,4");
+        ParseResult result = _service.Parse("a,b\n1,2\n3,4");
         var rows = (List<Dictionary<string, string>>)result.ParsedContent;
 
         Assert.Equal(2, result.ParsedCount);
@@ -39,7 +39,7 @@ public class CsvParserTests
     [Fact]
     public void ParseQuotedFieldUnwrapsQuotes()
     {
-        var result = _service.Parse("h\n\"hello, world\"");
+        ParseResult result = _service.Parse("h\n\"hello, world\"");
         var rows = (List<Dictionary<string, string>>)result.ParsedContent;
         Assert.Equal("hello, world", rows[0]["h"]);
     }
@@ -47,7 +47,7 @@ public class CsvParserTests
     [Fact]
     public void ParseEscapedQuoteUnescapes()
     {
-        var result = _service.Parse("h\n\"say \"\"hi\"\"\"");
+        ParseResult result = _service.Parse("h\n\"say \"\"hi\"\"\"");
         var rows = (List<Dictionary<string, string>>)result.ParsedContent;
         Assert.Equal("say \"hi\"", rows[0]["h"]);
     }
@@ -55,7 +55,7 @@ public class CsvParserTests
     [Fact]
     public void ParseFewerFieldsPadsEmpty()
     {
-        var result = _service.Parse("a,b\n1");
+        ParseResult result = _service.Parse("a,b\n1");
         var rows = (List<Dictionary<string, string>>)result.ParsedContent;
         Assert.Equal("1", rows[0]["a"]);
         Assert.Equal("", rows[0]["b"]);
