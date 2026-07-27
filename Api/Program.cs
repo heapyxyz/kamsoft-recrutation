@@ -18,6 +18,8 @@ builder.Services.AddSingleton<CsvParserService>();
 
 var app = builder.Build();
 
+// this is a recrutation task, so there's no need to run SwaggerUI only in development
+// if this was a big project, I would use app.Environment.IsDevelopment()
 app.MapOpenApi();
 app.UseSwaggerUI(options =>
 {
