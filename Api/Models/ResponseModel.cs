@@ -1,14 +1,11 @@
 namespace Api.Models;
 
-public class ResponseSuccessModel(int parsedCount, object parsedContent)
+public record ResponseSuccessModel(int ParsedCount, object ParsedContent)
 {
-    public StatusType Status { get; set; } = StatusType.Success;
-    public int ParsedCount { get; set; } = parsedCount;
-    public object ParsedContent { get; set; } = parsedContent;
+    public StatusType Status { get; init; } = StatusType.Success;
 }
 
-public class ResponseFailedModel(string message)
+public record ResponseFailedModel(string Message)
 {
-    public StatusType Status { get; set; } = StatusType.Failed;
-    public string Message { get; set; } = message;
+    public StatusType Status { get; init; } = StatusType.Failed;
 }
