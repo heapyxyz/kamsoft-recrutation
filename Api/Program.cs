@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Api.Converters;
 using Api.Services;
 
@@ -5,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
     options.JsonSerializerOptions.Converters.Add(new ContentTypeConverter());
     options.JsonSerializerOptions.Converters.Add(new StatusTypeConverter());
 });
