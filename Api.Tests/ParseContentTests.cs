@@ -14,6 +14,9 @@ public class ParseContentTests(WebApplicationFactory<Program> factory, ITestOutp
     [Theory]
     [InlineData("CSV", "123")]
     [InlineData("INTERNAL_JSON", "456")]
+    [InlineData("INTERNAL_JSON", "{ \"hello\": \"world\" }")]
+    [InlineData("INTERNAL_JSON", "[1, 2, 3, 4]")]
+    [InlineData("INTERNAL_JSON", "true")]
     public async Task PostReturnsOk(string type, string content)
     {
         byte[] byteData = Encoding.UTF8.GetBytes(content);
@@ -33,6 +36,7 @@ public class ParseContentTests(WebApplicationFactory<Program> factory, ITestOutp
     [InlineData("something", "else")]
     [InlineData("csv", "...")]
     [InlineData("iNtErNaL_jSoN", "hello_world")]
+    [InlineData("INTERNAL_JSON", "this_shouldnt_work")]
     public async Task PostReturnsBadRequest(string? type, string? content)
     {
         if (!string.IsNullOrWhiteSpace(content))
