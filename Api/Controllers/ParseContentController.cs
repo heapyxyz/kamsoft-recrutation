@@ -7,7 +7,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("/api/v1/parse-content")]
-public class ParseContentController(JsonParserService jsonParser, CsvParserService csvParser) : ControllerBase
+public class ParseContentController(Dictionary<ContentType, IContentParser> parsers) : ControllerBase
 {
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK), ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -20,6 +20,11 @@ public class ParseContentController(JsonParserService jsonParser, CsvParserServi
             return BadRequest(failedResponse);
         }
 
+        if (request.Type is not { } type || !parsers.TryGetValue(type, out var parser))
+        {
+            ResponseFailedModel failedResponse = new("Field 'type' is required");
+            return BadRequest(failedResponse);
+        }
 
         byte[] buffer = new byte[request.Content.Length];
         if (!Convert.TryFromBase64String(request.Content, buffer, out int bytesWritten))
@@ -32,13 +37,7 @@ public class ParseContentController(JsonParserService jsonParser, CsvParserServi
 
         try
         {
-            ParseResult result = request.Type switch
-            {
-                ContentType.Csv => csvParser.Parse(decodedContent),
-                ContentType.Json => jsonParser.Parse(decodedContent),
-                _ => throw new Exception("Field 'type' is invalid")
-            };
-
+            ParseResult result = parser.Parse(decodedContent);
             ResponseSuccessModel successResponse = new(result.ParsedCount, result.ParsedContent);
             return Ok(successResponse);
         }
