@@ -12,7 +12,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddOpenApi();
 
 builder.Services.AddSingleton<JsonParserService>();
-// builder.Services.AddSingleton<CsvParserService>();
+builder.Services.AddSingleton<CsvParserService>();
 
 var app = builder.Build();
 

@@ -7,7 +7,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("/api/v1/parse-content")]
-public class ParseContentController(JsonParserService jsonParser) : ControllerBase
+public class ParseContentController(JsonParserService jsonParser, CsvParserService csvParser) : ControllerBase
 {
     [HttpPost]
     [Consumes("application/json")]
@@ -29,7 +29,7 @@ public class ParseContentController(JsonParserService jsonParser) : ControllerBa
         {
             ParseResult result = request.Type switch
             {
-                ContentType.Csv => new ParseResult(0, new { }), // TODO: CSV parser service
+                ContentType.Csv => csvParser.Parse(decodedContent),
                 ContentType.Json => jsonParser.Parse(decodedContent),
                 _ => new ParseResult(0, new { }) // CS8524 going crazy without this
             };
