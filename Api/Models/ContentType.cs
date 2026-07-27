@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace Api.Models;
 
+[JsonConverter(typeof(JsonStringEnumConverter<ContentType>))]
 public enum ContentType
 {
-    Csv,
-    Json
+    [JsonStringEnumMemberName("CSV")] Csv,
+    [JsonStringEnumMemberName("INTERNAL_JSON")] Json
 }

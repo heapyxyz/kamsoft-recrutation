@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace Api.Models;
 
+[JsonConverter(typeof(JsonStringEnumConverter<StatusType>))]
 public enum StatusType
 {
-    Success,
-    Failed
+    [JsonStringEnumMemberName("SUCCESS")] Success,
+    [JsonStringEnumMemberName("FAILED")] Failed
 }
