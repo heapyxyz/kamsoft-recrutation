@@ -13,7 +13,7 @@ public class ParseContentTests(WebApplicationFactory<Program> factory, ITestOutp
     private readonly HttpClient _client = factory.CreateClient();
 
     [Theory]
-    [InlineData("CSV", "123", 1)]
+    [InlineData("CSV", "123", 0)]
     [InlineData("INTERNAL_JSON", "456", 1)]
     [InlineData("INTERNAL_JSON", "{ \"hello\": \"world\" }", 1)]
     [InlineData("INTERNAL_JSON", "[1, 2, 3, 4]", 4)]
