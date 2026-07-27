@@ -12,7 +12,7 @@ public class ParseContentController(Dictionary<ContentType, IContentParser> pars
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK), ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Consumes("application/json")]
-    public async Task<IActionResult> ParseContent([FromBody] RequestModel request)
+    public IActionResult ParseContent([FromBody] RequestModel request)
     {
         if (string.IsNullOrWhiteSpace(request.Content))
         {
