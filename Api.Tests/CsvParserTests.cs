@@ -24,7 +24,7 @@ public class CsvParserTests
     }
 
     [Fact]
-    public void ParseBasicCsv_ReturnsCorrectData()
+    public void ParseBasicCsvReturnsCorrectData()
     {
         ParseResult result = _service.Parse("a,b\n1,2\n3,4");
         var rows = (List<Dictionary<string, string>>)result.ParsedContent;

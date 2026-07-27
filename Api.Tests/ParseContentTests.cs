@@ -57,4 +57,62 @@ public class ParseContentTests(WebApplicationFactory<Program> factory, ITestOutp
             $"type: {type} | content: {content} | status: {response.StatusCode} | response: {await response.Content.ReadAsStringAsync()}");
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+
+    [Fact]
+    public async Task PostJsonObjectReturnsCorrectData()
+    {
+        string content = "{ \"hello\": \"world\", \"foo\": \"bar\" }";
+        byte[] bytes = Encoding.UTF8.GetBytes(content);
+        content = Convert.ToBase64String(bytes);
+
+        var body = new { type = "INTERNAL_JSON", content };
+        var response = await _client.PostAsJsonAsync("/api/v1/parse-content", body);
+
+        output.WriteLine(
+            $"type: INTERNAL_JSON | content: {content} | status: {response.StatusCode} | response: {await response.Content.ReadAsStringAsync()}");
+
+        JsonNode? root = await response.Content.ReadFromJsonAsync<JsonNode>();
+        Assert.Equal(2, (int)root!["parsed_count"]!);
+        Assert.Equal("world", (string)root["parsed_content"]!["hello"]!);
+        Assert.Equal("bar", (string)root["parsed_content"]!["foo"]!);
+    }
+
+    [Fact]
+    public async Task PostJsonArrayReturnsCorrectData()
+    {
+        string content = "[10, 20, 30]";
+        byte[] bytes = Encoding.UTF8.GetBytes(content);
+        content = Convert.ToBase64String(bytes);
+
+        var body = new { type = "INTERNAL_JSON", content };
+        var response = await _client.PostAsJsonAsync("/api/v1/parse-content", body);
+
+        output.WriteLine(
+            $"type: INTERNAL_JSON | content: {content} | status: {response.StatusCode} | response: {await response.Content.ReadAsStringAsync()}");
+
+        JsonNode? root = await response.Content.ReadFromJsonAsync<JsonNode>();
+        Assert.Equal(3, (int)root!["parsed_count"]!);
+        Assert.Equal(3, ((JsonArray)root["parsed_content"]!).Count);
+        Assert.Equal(10, (int)root["parsed_content"]![0]!);
+        Assert.Equal(30, (int)root["parsed_content"]![2]!);
+    }
+
+    [Fact]
+    public async Task PostCsvReturnsCorrectData()
+    {
+        string content = "name,age\nAlice,30\nBob,25";
+        byte[] bytes = Encoding.UTF8.GetBytes(content);
+        content = Convert.ToBase64String(bytes);
+
+        var body = new { type = "CSV", content };
+        var response = await _client.PostAsJsonAsync("/api/v1/parse-content", body);
+
+        output.WriteLine(
+            $"type: CSV | content: {content} | status: {response.StatusCode} | response: {await response.Content.ReadAsStringAsync()}");
+
+        JsonNode? root = await response.Content.ReadFromJsonAsync<JsonNode>();
+        Assert.Equal(2, (int)root!["parsed_count"]!);
+        Assert.Equal("Alice", (string)root["parsed_content"]![0]!["name"]!);
+        Assert.Equal("25", (string)root["parsed_content"]![1]!["age"]!);
+    }
 }

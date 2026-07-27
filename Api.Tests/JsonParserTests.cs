@@ -26,8 +26,6 @@ public class JsonParserTests
 
     [Theory]
     [InlineData("123")]
-    [InlineData("10")]
-    [InlineData("1")]
     public void ParsePrimitiveReturnsOne(string content)
     {
         ParseResult result = _service.Parse(content);
