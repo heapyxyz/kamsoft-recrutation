@@ -1,0 +1,66 @@
+name: Draft Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag"
+        required: true
+      prerelease:
+        description: "Mark as pre-release"
+        type: boolean
+        default: false
+
+jobs:
+  draft-release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore project
+        run: dotnet restore Kamsoft.slnx
+
+      - name: Publish and package for Windows
+        run: |
+          dotnet publish Api/Api.csproj -c Release -r win-x64 --self-contained false -o ./publish-windows
+          cd ./publish-windows
+          zip -r ../KamsoftApi-win-x64.zip .
+
+      - name: Publish and package for Windows (self-contained)
+        run: |
+          dotnet publish Api/Api.csproj -c Release -r win-x64 --self-contained true -o ./publish-windows-sc
+          cd ./publish-windows-sc
+          zip -r ../KamsoftApi-sc-win-x64.zip .
+
+      - name: Publish and package for Linux
+        run: |
+          dotnet publish Api/Api.csproj -c Release -r linux-x64 --self-contained false -o ./publish-linux
+          cd ./publish-linux
+          tar -czf ../KamsoftApi-linux-x64.tar.gz .
+
+      - name: Publish and package for Linux (self-contained)
+        run: |
+          dotnet publish Api/Api.csproj -c Release -r linux-x64 --self-contained true -o ./publish-linux-sc
+          cd ./publish-linux-sc
+          tar -czf ../KamsoftApi-sc-linux-x64.tar.gz .
+
+      - uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ inputs.tag }}
+          name: ${{ inputs.tag }}
+          draft: true
+          prerelease: ${{ inputs.prerelease }}
+          body: "Paczki z `sc` w nazwie to wersje **self-contained** - nie wymagają **.NET Runtime 10.0** do uruchomienia."
+          files: |
+            ./KamsoftApi-win-x64.zip
+            ./KamsoftApi-linux-x64.tar.gz
+            ./KamsoftApi-sc-win-x64.zip
+            ./KamsoftApi-sc-linux-x64.tar.gz
