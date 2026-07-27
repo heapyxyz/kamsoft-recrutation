@@ -3,7 +3,7 @@ using Api.Models;
 
 namespace Api.Services;
 
-public class JsonParserService
+public class JsonParserService : IContentParser
 {
     public ParseResult Parse(string content)
     {

@@ -2,7 +2,7 @@ using Api.Models;
 
 namespace Api.Services;
 
-public class CsvParserService
+public class CsvParserService : IContentParser
 {
     // insideQuotes:
     // - character is ", nextCharacter is " => add character to currentField, i++ (skip)
