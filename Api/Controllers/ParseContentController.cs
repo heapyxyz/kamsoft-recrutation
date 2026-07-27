@@ -1,12 +1,13 @@
 using System.Text;
 using Api.Models;
+using Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [ApiController]
 [Route("/api/v1/parse-content")]
-public class ParseContentController : ControllerBase
+public class ParseContentController(JsonParserService jsonParser) : ControllerBase
 {
     [HttpPost]
     [Consumes("application/json")]
@@ -20,10 +21,26 @@ public class ParseContentController : ControllerBase
         }
         catch
         {
-            return BadRequest("Field 'content' has invalid Base64 data");
+            ResponseFailedModel failedResponse = new("Field 'content' has invalid Base64 data");
+            return BadRequest(failedResponse);
         }
 
-        ResponseModel response = new(StatusType.Success, 123, new { Hello = "World" });
-        return Ok(response);
+        try
+        {
+            ParseResult result = request.Type switch
+            {
+                ContentType.Csv => new ParseResult(0, new { }), // TODO: CSV parser service
+                ContentType.Json => jsonParser.Parse(decodedContent),
+                _ => new ParseResult(0, new { }) // CS8524 going crazy without this
+            };
+
+            ResponseSuccessModel successResponse = new(result.ParsedNumber, result.ParsedContent);
+            return Ok(successResponse);
+        }
+        catch (Exception e)
+        {
+            ResponseFailedModel failedResponse = new(e.Message);
+            return BadRequest(failedResponse);
+        }
     }
 }
