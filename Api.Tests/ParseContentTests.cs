@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit.Abstractions;
 
@@ -12,15 +13,15 @@ public class ParseContentTests(WebApplicationFactory<Program> factory, ITestOutp
     private readonly HttpClient _client = factory.CreateClient();
 
     [Theory]
-    [InlineData("CSV", "123")]
-    [InlineData("INTERNAL_JSON", "456")]
-    [InlineData("INTERNAL_JSON", "{ \"hello\": \"world\" }")]
-    [InlineData("INTERNAL_JSON", "[1, 2, 3, 4]")]
-    [InlineData("INTERNAL_JSON", "true")]
-    public async Task PostReturnsOk(string type, string content)
+    [InlineData("CSV", "123", 1)]
+    [InlineData("INTERNAL_JSON", "456", 1)]
+    [InlineData("INTERNAL_JSON", "{ \"hello\": \"world\" }", 1)]
+    [InlineData("INTERNAL_JSON", "[1, 2, 3, 4]", 4)]
+    [InlineData("INTERNAL_JSON", "true", 1)]
+    public async Task PostReturnsOk(string type, string content, int expectedCount)
     {
-        byte[] byteData = Encoding.UTF8.GetBytes(content);
-        content = Convert.ToBase64String(byteData);
+        byte[] bytes = Encoding.UTF8.GetBytes(content);
+        content = Convert.ToBase64String(bytes);
 
         var body = new { type, content };
         var response = await _client.PostAsJsonAsync("/api/v1/parse-content", body);
@@ -28,6 +29,10 @@ public class ParseContentTests(WebApplicationFactory<Program> factory, ITestOutp
         output.WriteLine(
             $"type: {type} | content: {content} | status: {response.StatusCode} | response: {await response.Content.ReadAsStringAsync()}");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        JsonNode? node = await response.Content.ReadFromJsonAsync<JsonNode>();
+        Assert.Equal("SUCCESS", (string)node!["status"]!);
+        Assert.Equal(expectedCount, (int)node["parsed_count"]!);
     }
 
     [Theory]
@@ -41,8 +46,8 @@ public class ParseContentTests(WebApplicationFactory<Program> factory, ITestOutp
     {
         if (!string.IsNullOrWhiteSpace(content))
         {
-            byte[] byteData = Encoding.UTF8.GetBytes(content);
-            content = Convert.ToBase64String(byteData);
+            byte[] bytes = Encoding.UTF8.GetBytes(content);
+            content = Convert.ToBase64String(bytes);
         }
 
         var body = new { type, content };

@@ -26,14 +26,14 @@ public class ParseContentController(Dictionary<ContentType, IContentParser> pars
             return BadRequest(failedResponse);
         }
 
-        byte[] buffer = new byte[request.Content.Length];
-        if (!Convert.TryFromBase64String(request.Content, buffer, out int bytesWritten))
+        byte[] bytes = new byte[request.Content.Length];
+        if (!Convert.TryFromBase64String(request.Content, bytes, out int bytesWritten))
         {
             ResponseFailedModel failedResponse = new("Field 'content' has invalid Base64 data");
             return BadRequest(failedResponse);
         }
 
-        string decodedContent = Encoding.UTF8.GetString(buffer, 0, bytesWritten);
+        string decodedContent = Encoding.UTF8.GetString(bytes, 0, bytesWritten);
 
         try
         {
