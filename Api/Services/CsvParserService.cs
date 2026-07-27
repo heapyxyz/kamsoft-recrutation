@@ -23,31 +23,37 @@ public class CsvParserService
 
             if (insideQuotes)
             {
-                if (character == '"')
+                if (character != '"')
                 {
-                    if (i + 1 < line.Length && line[i + 1] == '"')
-                    {
-                        currentField += character;
-                        i++;
-                    }
-                    else
-                        insideQuotes = false;
-                }
-                else
                     currentField += character;
+                    continue;
+                }
+
+                if (i + 1 < line.Length && line[i + 1] == '"')
+                {
+                    currentField += character;
+                    i++;
+                    continue;
+                }
+
+                insideQuotes = false;
+                continue;
             }
-            else
+
+            if (character == '"')
             {
-                if (character == '"')
-                    insideQuotes = true;
-                else if (character == ',')
-                {
-                    list.Add(currentField);
-                    currentField = string.Empty;
-                }
-                else
-                    currentField += character;
+                insideQuotes = true;
+                continue;
             }
+
+            if (character == ',')
+            {
+                list.Add(currentField);
+                currentField = string.Empty;
+                continue;
+            }
+
+            currentField += character;
         }
 
         list.Add(currentField);
@@ -69,22 +75,18 @@ public class CsvParserService
                 continue;
 
             if (headers == null)
-                headers = ParseLine(trimmedLine);
-            else
             {
-                List<string> values = ParseLine(trimmedLine);
-                Dictionary<string, string> row = [];
-
-                for (int i = 0; i < headers.Count; i++)
-                {
-                    if (i < values.Count)
-                        row[headers[i]] = values[i];
-                    else
-                        row[headers[i]] = "";
-                }
-
-                rows.Add(row);
+                headers = ParseLine(trimmedLine);
+                continue;
             }
+
+            List<string> values = ParseLine(trimmedLine);
+            Dictionary<string, string> row = [];
+
+            for (int i = 0; i < headers.Count; i++)
+                row[headers[i]] = i < values.Count ? values[i] : string.Empty;
+
+            rows.Add(row);
         }
 
         return new ParseResult(rows.Count, rows);
